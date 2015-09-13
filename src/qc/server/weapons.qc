@@ -24,9 +24,12 @@ void() W_Precache =
 
 	precache_sound ("sounds/weapons/railgun_fire.wav");	// railgun fire
 
-	precache_sound ("weapons/ric1.wav");	// ricochet (used in c code)
-	precache_sound ("weapons/ric2.wav");	// ricochet (used in c code)
-	precache_sound ("weapons/ric3.wav");	// ricochet (used in c code)
+//	precache_sound ("sounds/weapons/ric1.wav");	// ricochet (used in c code)
+//	precache_sound ("sounds/weapons/ric2.wav");	// ricochet (used in c code)
+//	precache_sound ("sounds/weapons/ric3.wav");	// ricochet (used in c code)
+
+	precache_sound ("sounds/weapons/axe_swing.wav");	// axe swing
+	precache_sound ("sounds/weapons/axe_scrape.wav");	// axe hit wall
 };
 
 float() crandom =
@@ -811,15 +814,8 @@ void() W_Attack =
 	{
 		sound (self, CHAN_WEAPON, "sounds/weapons/axe_swing.wav", 1, ATTN_NORM);
 		r = random();
-		if (r < 0.25)
-			player_axe1 ();
-		else if (r<0.5)
-			player_axeb1 ();
-		else if (r<0.75)
-			player_axec1 ();
-		else
-			player_axed1 ();
-		self.attack_finished = time + 0.5;
+		player_axe1 ();
+		self.attack_finished = time + 0.3;
 	}
 	else if (self.weapon == IT_SHOTGUN)
 	{
@@ -1016,7 +1012,7 @@ Go to the prev weapon with ammo
 */
 void() CycleWeaponReverseCommand =
 {
-	local	float	it, am;
+	local float it, am;
 
 	it = self.items;
 	self.impulse = 0;
