@@ -2,3 +2,5 @@
 *.blend1
 data/textures/base/*.blend
 data/sounds/sfxr/*
+src/darkplaces/X11/*
+src/darkplaces/build-obj/*
