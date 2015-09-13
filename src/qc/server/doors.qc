@@ -1,9 +1,7 @@
 
 float DOOR_START_OPEN = 1;
 float DOOR_DONT_LINK = 4;
-float DOOR_GOLD_KEY = 8;
-float DOOR_SILVER_KEY = 16;
-float DOOR_TOGGLE = 32;
+float DOOR_TOGGLE = 8;
 
 /*
 
@@ -201,58 +199,6 @@ void() door_touch =
 		return;
 
 	self.owner.attack_finished = time + 2;
-
-	if (self.owner.message != "")
-	{
-		centerprint (other, self.owner.message);
-		sound (other, CHAN_VOICE, "misc/talk.wav", 1, ATTN_NORM);
-	}
-	
-// key door stuff
-	if (!self.items)
-		return;
-
-// FIXME: blink key on player's status bar
-	if ( (self.items & other.items) != self.items )
-	{
-		if (self.owner.items == IT_KEY1)
-		{
-			if (world.worldtype == 2)
-			{
-				centerprint (other, "You need the silver keycard");
-				sound (self, CHAN_VOICE, self.noise3, 1, ATTN_NORM);
-			}
-			else if (world.worldtype == 1)
-			{
-				centerprint (other, "You need the silver runekey");
-				sound (self, CHAN_VOICE, self.noise3, 1, ATTN_NORM);
-			}
-			else if (world.worldtype == 0)
-			{
-				centerprint (other, "You need the silver key");
-				sound (self, CHAN_VOICE, self.noise3, 1, ATTN_NORM);
-			}
-		}
-		else
-		{
-			if (world.worldtype == 2)
-			{
-				centerprint (other, "You need the gold keycard");
-				sound (self, CHAN_VOICE, self.noise3, 1, ATTN_NORM);
-			}
-			else if (world.worldtype == 1)
-			{
-				centerprint (other, "You need the gold runekey");
-				sound (self, CHAN_VOICE, self.noise3, 1, ATTN_NORM);			
-			}
-			else if (world.worldtype == 0)
-			{
-				centerprint (other, "You need the gold key");
-				sound (self, CHAN_VOICE, self.noise3, 1, ATTN_NORM);
-			}
-		}
-		return;
-	}
 
 	other.items = other.items - self.items;
 	self.touch = SUB_Null;
@@ -493,11 +439,6 @@ void() func_door =
 
 	self.blocked = door_blocked;
 	self.use = door_use;
-	
-	if (self.spawnflags & DOOR_SILVER_KEY)
-		self.items = IT_KEY1;
-	if (self.spawnflags & DOOR_GOLD_KEY)
-		self.items = IT_KEY2;
 	
 	if (!self.speed)
 		self.speed = 100;

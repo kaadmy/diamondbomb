@@ -9,7 +9,7 @@ PLAYER
 ==============================================================================
 */
 
-$cd id1/models/player_4
+$cd data/models/players/
 $origin 0 -6 24
 $base base		
 $skin skin
@@ -170,7 +170,7 @@ void()	player_axed4 =	[$axattd4, player_run	] {self.weaponframe=8;};
 
 //============================================================================
 
-void() player_nail1   =[$nailatt1, player_nail2  ] 
+void() player_plasma1   =[$nailatt1, player_plasma2  ] 
 {
 	self.effects = self.effects | EF_MUZZLEFLASH;
 
@@ -179,27 +179,13 @@ void() player_nail1   =[$nailatt1, player_nail2  ]
 	self.weaponframe = self.weaponframe + 1;
 	if (self.weaponframe == 9)
 		self.weaponframe = 1;
-	SuperDamageSound();
-	W_FireSpikes (4);
-	self.attack_finished = time + 0.2;
-};
-void() player_nail2   =[$nailatt2, player_nail1  ]
-{
-	self.effects = self.effects | EF_MUZZLEFLASH;
-
-	if (!self.button0)
-		{player_run ();return;}
-	self.weaponframe = self.weaponframe + 1;
-	if (self.weaponframe == 9)
-		self.weaponframe = 1;
-	SuperDamageSound();
-	W_FireSpikes (-4);
+	W_FirePlasma (4);
 	self.attack_finished = time + 0.2;
 };
 
 //============================================================================
 
-void() player_light1   =[$light1, player_light2  ] 
+void() player_slug1   =[$light1, player_light2  ] 
 {
 	self.effects = self.effects | EF_MUZZLEFLASH;
 
@@ -208,21 +194,7 @@ void() player_light1   =[$light1, player_light2  ]
 	self.weaponframe = self.weaponframe + 1;
 	if (self.weaponframe == 5)
 		self.weaponframe = 1;
-	SuperDamageSound();
-	W_FireLightning();
-	self.attack_finished = time + 0.2;
-};
-void() player_light2   =[$light2, player_light1  ]
-{
-	self.effects = self.effects | EF_MUZZLEFLASH;
-
-	if (!self.button0)
-		{player_run ();return;}
-	self.weaponframe = self.weaponframe + 1;
-	if (self.weaponframe == 5)
-		self.weaponframe = 1;
-	SuperDamageSound();
-	W_FireLightning();
+	W_FireSlug();
 	self.attack_finished = time + 0.2;
 };
 
@@ -247,39 +219,13 @@ local float		rs;
 
 	if (damage_attacker.classname == "teledeath")
 	{
-		sound (self, CHAN_VOICE, "player/teledth1.wav", 1, ATTN_NONE);
-		return;
-	}
-
-// water pain sounds
-	if (self.watertype == CONTENT_WATER && self.waterlevel == 3)
-	{
-		DeathBubbles(1);
-		if (random() > 0.5)
-			sound (self, CHAN_VOICE, "player/drown1.wav", 1, ATTN_NORM);
-		else
-			sound (self, CHAN_VOICE, "player/drown2.wav", 1, ATTN_NORM);
-		return;
-	}
-
-// slime pain sounds
-	if (self.watertype == CONTENT_SLIME)
-	{
-// FIX ME	put in some steam here
-		if (random() > 0.5)
-			sound (self, CHAN_VOICE, "player/lburn1.wav", 1, ATTN_NORM);
-		else
-			sound (self, CHAN_VOICE, "player/lburn2.wav", 1, ATTN_NORM);
+		sound (self, CHAN_VOICE, "sounds/player/die.wav", 1, ATTN_NONE);
 		return;
 	}
 
 	if (self.watertype == CONTENT_LAVA)
 	{
-		if (random() > 0.5)
-			sound (self, CHAN_VOICE, "player/lburn1.wav", 1, ATTN_NORM);
-		else
-			sound (self, CHAN_VOICE, "player/lburn2.wav", 1, ATTN_NORM);
-		return;
+		sound (self, CHAN_VOICE, "sounds/player/burn.wav", 1, ATTN_NORM);
 	}
 
 	if (self.pain_finished > time)
@@ -300,21 +246,8 @@ local float		rs;
 	}
 	
 
-	rs = rint((random() * 5) + 1);
-
 	self.noise = "";
-	if (rs == 1)
-		self.noise = "player/pain1.wav";
-	else if (rs == 2)
-		self.noise = "player/pain2.wav";
-	else if (rs == 3)
-		self.noise = "player/pain3.wav";
-	else if (rs == 4)
-		self.noise = "player/pain4.wav";
-	else if (rs == 5)
-		self.noise = "player/pain5.wav";
-	else
-		self.noise = "player/pain6.wav";
+	self.noise = "sounds/player/hurt.wav";
 
 	sound (self, CHAN_VOICE, self.noise, 1, ATTN_NORM);
 	return;
@@ -532,9 +465,6 @@ void() PlayerDie =
 	self.radsuit_finished = 0;
 	self.modelindex = modelindex_player;	// don't use eyes
 
-	if (deathmatch || coop)
-		DropBackpack();
-	
 	self.weaponmodel="";
 	self.view_ofs = '0 0 -8';
 	self.deadflag = DEAD_DYING;
@@ -580,7 +510,7 @@ void() PlayerDie =
 
 void() set_suicide_frame =
 {	// used by klill command and diconnect command
-	if (self.model != "progs/player.mdl")
+	if (self.model != "models/players/player.md3")
 		return;	// allready gibbed
 	self.frame = $deatha11;
 	self.solid = SOLID_NOT;

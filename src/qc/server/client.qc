@@ -39,8 +39,8 @@ void() SetChangeParms =
 	}
 
 // remove items
-	self.items = self.items - (self.items &
-	(IT_KEY1 | IT_KEY2 | IT_INVISIBILITY | IT_INVULNERABILITY | IT_SUIT | IT_QUAD) );
+//	self.items = self.items - (self.items &
+//	(IT_KEY1 | IT_KEY2 | IT_INVISIBILITY | IT_INVULNERABILITY | IT_SUIT | IT_QUAD) );
 
 // cap super health
 	if (self.health > 100)
@@ -54,9 +54,9 @@ void() SetChangeParms =
 		parm4 = 25;
 	else
 		parm4 = self.ammo_shells;
-	parm5 = self.ammo_nails;
+	parm5 = self.ammo_plasma;
 	parm6 = self.ammo_rockets;
-	parm7 = self.ammo_cells;
+	parm7 = self.ammo_slugs;
 	parm8 = self.weapon;
 	parm9 = self.armortype * 100;
 };
@@ -86,9 +86,9 @@ void() DecodeLevelParms =
 	self.health = parm2;
 	self.armorvalue = parm3;
 	self.ammo_shells = parm4;
-	self.ammo_nails = parm5;
+	self.ammo_plasma = parm5;
 	self.ammo_rockets = parm6;
-	self.ammo_cells = parm7;
+	self.ammo_slugs = parm7;
 	self.weapon = parm8;
 	self.armortype = parm9 * 0.01;
 };
@@ -1232,30 +1232,10 @@ void(entity targ, entity attacker) ClientObituary =
 				attacker.frags = attacker.frags - 1;
 				bprint (targ.netname);
 
-				if (targ.weapon == 64 && targ.waterlevel > 1)
-				{
-					bprint (" discharges into the water.\n");
-					return;
-				}
 				if (targ.weapon == IT_GRENADE_LAUNCHER)
 					bprint (" tries to put the pin back in\n");
 				else
 					bprint (" becomes bored with life\n");
-				return;
-			}
-			else if ( (teamplay == 2) && (targ.team > 0)&&(targ.team == attacker.team) )
-			{
-				if (rnum < 0.25)
-					deathstring = " mows down a teammate\n";
-				else if (rnum < 0.50)
-					deathstring = " checks his glasses\n";
-				else if (rnum < 0.75)
-					deathstring = " gets a frag for the other team\n";
-				else
-					deathstring = " loses another friend\n";
-				bprint (attacker.netname);
-				bprint (deathstring);
-				attacker.frags = attacker.frags - 1;
 				return;
 			}
 			else
@@ -1270,28 +1250,18 @@ void(entity targ, entity attacker) ClientObituary =
 				}
 				if (rnum == IT_SHOTGUN)
 				{
-					deathstring = " chewed on ";
+					deathstring = " was peppered by ";
 					deathstring2 = "'s boomstick\n";
 				}
-				if (rnum == IT_SUPER_SHOTGUN)
+				if (rnum == IT_PLASMAGUN)
 				{
-					deathstring = " ate 2 loads of ";
-					deathstring2 = "'s buckshot\n";
-				}
-				if (rnum == IT_NAILGUN)
-				{
-					deathstring = " was nailed by ";
-					deathstring2 = "\n";
-				}
-				if (rnum == IT_SUPER_NAILGUN)
-				{
-					deathstring = " was punctured by ";
+					deathstring = " melted ";
 					deathstring2 = "\n";
 				}
 				if (rnum == IT_GRENADE_LAUNCHER)
 				{
-					deathstring = " eats ";
-					deathstring2 = "'s pineapple\n";
+					deathstring = " sat on ";
+					deathstring2 = "'s grenade\n";
 					if (targ.health < -40)
 					{
 						deathstring = " was gibbed by ";
@@ -1300,21 +1270,18 @@ void(entity targ, entity attacker) ClientObituary =
 				}
 				if (rnum == IT_ROCKET_LAUNCHER)
 				{
-					deathstring = " rides ";
-					deathstring2 = "'s rocket\n";
+					deathstring = " blew up ";
+					deathstring2 = "\n";
 					if (targ.health < -40)
 					{
-						deathstring = " was gibbed by ";
-						deathstring2 = "'s rocket\n" ;
+						deathstring = " gibbed ";
+						deathstring2 = "\n";
 					}
 				}
-				if (rnum == IT_LIGHTNING)
+				if (rnum == IT_RAILGUN)
 				{
-					deathstring = " accepts ";
-					if (attacker.waterlevel > 1)
-						deathstring2 = "'s discharge\n";
-					else
-						deathstring2 = "'s shaft\n";
+					deathstring = " deflated ";
+					deathstring2 = "\n";
 				}
 				bprint (targ.netname);
 				bprint (deathstring);
@@ -1328,45 +1295,6 @@ void(entity targ, entity attacker) ClientObituary =
 			targ.frags = targ.frags - 1;
 			bprint (targ.netname);
 
-			// killed by a montser?
-			if (attacker.flags & FL_MONSTER)
-			{
-				if (attacker.classname == "monster_army")
-					bprint (" was shot by a Grunt\n");
-				if (attacker.classname == "monster_demon1")
-					bprint (" was eviscerated by a Fiend\n");
-				if (attacker.classname == "monster_dog")
-					bprint (" was mauled by a Rottweiler\n");
-				if (attacker.classname == "monster_dragon")
-					bprint (" was fried by a Dragon\n");
-				if (attacker.classname == "monster_enforcer")
-					bprint (" was blasted by an Enforcer\n");
-				if (attacker.classname == "monster_fish")
-					bprint (" was fed to the Rotfish\n");
-				if (attacker.classname == "monster_hell_knight")
-					bprint (" was slain by a Death Knight\n");
-				if (attacker.classname == "monster_knight")
-					bprint (" was slashed by a Knight\n");
-				if (attacker.classname == "monster_ogre")
-					bprint (" was destroyed by an Ogre\n");
-				if (attacker.classname == "monster_oldone")
-					bprint (" became one with Shub-Niggurath\n");
-				if (attacker.classname == "monster_shalrath")
-					bprint (" was exploded by a Vore\n");
-				if (attacker.classname == "monster_shambler")
-					bprint (" was smashed by a Shambler\n");
-				if (attacker.classname == "monster_tarbaby")
-					bprint (" was slimed by a Spawn\n");
-				if (attacker.classname == "monster_vomit")
-					bprint (" was vomited on by a Vomitus\n");
-				if (attacker.classname == "monster_wizard")
-					bprint (" was scragged by a Scrag\n");
-				if (attacker.classname == "monster_zombie")
-					bprint (" joins the Zombies\n");
-
-				return;
-			}
-
 			// tricks and traps
 			if (attacker.classname == "explo_box")
 			{
@@ -1376,21 +1304,6 @@ void(entity targ, entity attacker) ClientObituary =
 			if (attacker.solid == SOLID_BSP && attacker != world)
 			{
 				bprint (" was squished\n");
-				return;
-			}
-			if (attacker.classname == "trap_shooter" || attacker.classname == "trap_spikeshooter")
-			{
-				bprint (" was spiked\n");
-				return;
-			}
-			if (attacker.classname == "fireball")
-			{
-				bprint (" ate a lavaball\n");
-				return;
-			}
-			if (attacker.classname == "trigger_changelevel")
-			{
-				bprint (" tried to leave\n");
 				return;
 			}
 
