@@ -1,6 +1,11 @@
 *~
 *.blend1
 data/textures/base/*.blend
-data/sounds/sfxr/*
-src/darkplaces/X11/*
-src/darkplaces/build-obj/*
+data/sounds/sfxr/
+src/darkplaces/X11/
+*.o
+*.d
+src/darkplaces/build-obj/
+src/darkplaces/darkplaces-glx
+src/darkplaces/darkplaces-sdl
+src/darkplaces/darkplaces-dedicated
