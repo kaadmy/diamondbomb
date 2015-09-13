@@ -15,6 +15,9 @@ By Kaadmy
 
 ==========================
 
+<= About =>
+    Diamondbomb is a futuristic arena shooter.
+
 <= Weapons =>
     <== Shotgun(SG) ==>
         Fires 10 pellets in a tight spread
