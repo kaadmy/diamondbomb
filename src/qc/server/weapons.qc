@@ -19,10 +19,10 @@ void() W_Precache =
 
 	precache_sound ("sounds/weapons/shotgun_fire.wav");	// shotgun fire
 
-	precache_sound ("sounds/weapons/plasma_fire.wav");	// plasma impact
-	precache_sound ("sounds/weapons/plasma_impact.wav");	// plasma fire
+	precache_sound ("sounds/weapons/plasmagun_fire.wav");	// plasmagun impact
+	precache_sound ("sounds/weapons/plasmagun_impact.wav");	// plasmagun fire
 
-	precache_sound ("sounds/weapons/railgun_fire.wav");	// slug fire
+	precache_sound ("sounds/weapons/railgun_fire.wav");	// railgun fire
 
 	precache_sound ("weapons/ric1.wav");	// ricochet (used in c code)
 	precache_sound ("weapons/ric2.wav");	// ricochet (used in c code)
@@ -60,7 +60,7 @@ void() W_FireAxe =
 	}
 	else
 	{	// hit wall
-		sound (self, CHAN_WEAPON, "player/axhit2.wav", 1, ATTN_NORM);
+		sound (self, CHAN_WEAPON, "sounds/player/axe_scrape.wav", 1, ATTN_NORM);
 		WriteByte (MSG_BROADCAST, SVC_TEMPENTITY);
 		WriteByte (MSG_BROADCAST, TE_GUNSHOT);
 		WriteCoord (MSG_BROADCAST, org_x);
@@ -270,7 +270,7 @@ void() W_FireShotgun =
 {
 	local vector dir;
 
-	sound (self, CHAN_WEAPON, "weapons/guncock.wav", 1, ATTN_NORM);
+	sound (self, CHAN_WEAPON, "sounds/weapons/shotgun_fire.wav", 1, ATTN_NORM);
 
 	self.punchangle_x = -2;
 
@@ -327,7 +327,7 @@ void() T_MissileTouch =
 	// was done in the impact
 	T_RadiusDamage (self, self.owner, 120, other);
 
-//	sound (self, CHAN_WEAPON, "weapons/r_exp3.wav", 1, ATTN_NORM);
+//	sound (self, CHAN_WEAPON, "sounds/weapons/rocketlauncher_impact.wav", 1, ATTN_NORM);
 	self.origin = self.origin - 8*normalize(self.velocity);
 
 	WriteByte (MSG_BROADCAST, SVC_TEMPENTITY);
@@ -352,7 +352,7 @@ void() W_FireRocket =
 
 	self.currentammo = self.ammo_rockets = self.ammo_rockets - 1;
 
-	sound (self, CHAN_WEAPON, "weapons/sgun1.wav", 1, ATTN_NORM);
+	sound (self, CHAN_WEAPON, "sounds/weapons/rocketlauncher_fire.wav", 1, ATTN_NORM);
 
 	self.punchangle_x = -2;
 
@@ -500,7 +500,7 @@ void() GrenadeTouch =
 		GrenadeExplode();
 		return;
 	}
-	sound (self, CHAN_WEAPON, "weapons/bounce.wav", 1, ATTN_NORM);	// bounce sound
+	sound (self, CHAN_WEAPON, "sounds/weapons/grenadelauncher_bounce.wav", 1, ATTN_NORM);	// bounce sound
 	if (self.velocity == '0 0 0')
 		self.avelocity = '0 0 0';
 };
@@ -516,7 +516,7 @@ void() W_FireGrenade =
 
 	self.currentammo = self.ammo_rockets = self.ammo_rockets - 1;
 
-	sound (self, CHAN_WEAPON, "weapons/grenade.wav", 1, ATTN_NORM);
+	sound (self, CHAN_WEAPON, "sounds/weapons/grenadelauncher_fire.wav", 1, ATTN_NORM);
 
 	self.punchangle_x = -2;
 
@@ -1075,16 +1075,6 @@ void() ServerflagsCommand =
 	serverflags = serverflags * 2 + 1;
 };
 
-void() QuadCheat =
-{
-	if (deathmatch || coop)
-		return;
-	self.super_time = 1;
-	self.super_damage_finished = time + 30;
-	self.items = self.items | IT_QUAD;
-	dprint ("quad cheat\n");
-};
-
 /*
 ============
 ImpulseCommands
@@ -1104,9 +1094,6 @@ void() ImpulseCommands =
 		ServerflagsCommand ();
 	if (self.impulse == 12)
 		CycleWeaponReverseCommand ();
-
-	if (self.impulse == 255)
-		QuadCheat ();
 
 	self.impulse = 0;
 };
@@ -1128,29 +1115,6 @@ void() W_WeaponFrame =
 // check for attack
 	if (self.button0)
 	{
-		SuperDamageSound ();
 		W_Attack ();
 	}
 };
-
-/*
-========
-SuperDamageSound
-
-Plays sound if needed
-========
-*/
-void() SuperDamageSound =
-{
-	if (self.super_damage_finished > time)
-	{
-		if (self.super_sound < time)
-		{
-			self.super_sound = time + 1;
-			sound (self, CHAN_BODY, "items/damage3.wav", 1, ATTN_NORM);
-		}
-	}
-	return;
-};
-
-

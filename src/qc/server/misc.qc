@@ -422,8 +422,8 @@ void() viewthing =
 {
 	self.movetype = MOVETYPE_NONE;
 	self.solid = SOLID_NOT;
-	precache_model ("progs/player.mdl");
-	setmodel (self, "progs/player.mdl");
+	precache_model ("models/players/player.md3");
+	setmodel (self, "models/players/player.md3");
 };
 
 

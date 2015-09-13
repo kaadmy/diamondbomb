@@ -283,4 +283,3 @@ void() SUB_UseTargets =
 		} while ( 1 );
 	}
 };
-

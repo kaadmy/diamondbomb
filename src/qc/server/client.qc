@@ -416,50 +416,32 @@ entity() SelectSpawnPoint =
 	if (spot)
 		return spot;
 
-// choose a info_player_deathmatch point
-	if (coop)
+// choose an info_player_deathmatch point
+	spot = lastspawn;
+	while (1)
 	{
-		lastspawn = find(lastspawn, classname, "info_player_coop");
-		if (lastspawn == world)
-			lastspawn = find (lastspawn, classname, "info_player_start");
-		if (lastspawn != world)
-			return lastspawn;
-	}
-	else if (deathmatch)
-	{
-		spot = lastspawn;
-		while (1)
+		spot = find(spot, classname, "info_player_deathmatch");
+		if (spot != world)
 		{
-			spot = find(spot, classname, "info_player_deathmatch");
-			if (spot != world)
+			if (spot == lastspawn)
+				return lastspawn;
+			pcount = 0;
+			thing = findradius(spot.origin, 32);
+			while(thing)
 			{
-				if (spot == lastspawn)
-					return lastspawn;
-				pcount = 0;
-				thing = findradius(spot.origin, 32);
-				while(thing)
-				{
-					if (thing.classname == "player")
-						pcount = pcount + 1;
-					thing = thing.chain;
-				}
-				if (pcount == 0)
-				{
-					lastspawn = spot;
-					return spot;
-				}
+				if (thing.classname == "player")
+					pcount = pcount + 1;
+				thing = thing.chain;
+			}
+			if (pcount == 0)
+			{
+				lastspawn = spot;
+				return spot;
 			}
 		}
 	}
 
-	if (serverflags)
-	{	// return with a rune to start
-		spot = find (world, classname, "info_player_start2");
-		if (spot)
-			return spot;
-	}
-
-	spot = find (world, classname, "info_player_start");
+	spot = find (world, classname, "info_player_deathmatch");
 	if (!spot)
 		error ("PutClientInServer: no info_player_start on level");
 
@@ -522,7 +504,7 @@ void() PutClientInServer =
 	setmodel (self, "progs/eyes.mdl");
 	modelindex_eyes = self.modelindex;
 
-	setmodel (self, "progs/player.mdl");
+	setmodel (self, "models/players/player.md3");
 	modelindex_player = self.modelindex;
 
 	setsize (self, VEC_HULL_MIN, VEC_HULL_MAX);
@@ -732,28 +714,6 @@ void() PlayerJump =
 	if (self.flags & FL_WATERJUMP)
 		return;
 
-	if (self.waterlevel >= 2)
-	{
-		if (self.watertype == CONTENT_WATER)
-			self.velocity_z = 100;
-		else if (self.watertype == CONTENT_SLIME)
-			self.velocity_z = 80;
-		else
-			self.velocity_z = 50;
-
-// play swiming sound
-		if (self.swim_flag < time)
-		{
-			self.swim_flag = time + 1;
-			if (random() < 0.5)
-				sound (self, CHAN_BODY, "misc/water1.wav", 1, ATTN_NORM);
-			else
-				sound (self, CHAN_BODY, "misc/water2.wav", 1, ATTN_NORM);
-		}
-
-		return;
-	}
-
 	if (!(self.flags & FL_ONGROUND))
 		return;
 
@@ -766,7 +726,7 @@ void() PlayerJump =
 
 	self.button2 = 0;
 // player jumping sound
-	sound (self, CHAN_BODY, "player/plyrjmp8.wav", 1, ATTN_NORM);
+	sound (self, CHAN_BODY, "sounds/player/jump.wav", 1, ATTN_NORM);
 	self.velocity_z = self.velocity_z + 270;
 };
 
@@ -787,38 +747,6 @@ void() WaterMove =
 	if (self.health < 0)
 		return;
 
-	if (self.waterlevel != 3)
-	{
-		if (self.air_finished < time)
-			sound (self, CHAN_VOICE, "player/gasp2.wav", 1, ATTN_NORM);
-		else if (self.air_finished < time + 9)
-			sound (self, CHAN_VOICE, "player/gasp1.wav", 1, ATTN_NORM);
-		self.air_finished = time + 12;
-		self.dmg = 2;
-	}
-	else if (self.air_finished < time)
-	{	// drown!
-		if (self.pain_finished < time)
-		{
-			self.dmg = self.dmg + 2;
-			if (self.dmg > 15)
-				self.dmg = 10;
-			T_Damage (self, world, world, self.dmg);
-			self.pain_finished = time + 1;
-		}
-	}
-
-	if (!self.waterlevel)
-	{
-		if (self.flags & FL_INWATER)
-		{
-			// play leave water sound
-			sound (self, CHAN_BODY, "misc/outwater.wav", 1, ATTN_NORM);
-			self.flags = self.flags - FL_INWATER;
-		}
-		return;
-	}
-
 	if (self.watertype == CONTENT_LAVA)
 	{	// do damage
 		if (self.dmgtime < time)
@@ -831,26 +759,11 @@ void() WaterMove =
 			T_Damage (self, world, world, 10*self.waterlevel);
 		}
 	}
-	else if (self.watertype == CONTENT_SLIME)
-	{	// do damage
-		if (self.dmgtime < time && self.radsuit_finished < time)
-		{
-			self.dmgtime = time + 1;
-			T_Damage (self, world, world, 4*self.waterlevel);
-		}
-	}
-
 	if ( !(self.flags & FL_INWATER) )
 	{
-
-// player enter water sound
-
+		// player enter water sound
 		if (self.watertype == CONTENT_LAVA)
 			sound (self, CHAN_BODY, "player/inlava.wav", 1, ATTN_NORM);
-		if (self.watertype == CONTENT_WATER)
-			sound (self, CHAN_BODY, "player/inh2o.wav", 1, ATTN_NORM);
-		if (self.watertype == CONTENT_SLIME)
-			sound (self, CHAN_BODY, "player/slimbrn2.wav", 1, ATTN_NORM);
 
 		self.flags = self.flags + FL_INWATER;
 		self.dmgtime = 0;
@@ -948,162 +861,6 @@ void() PlayerPreThink =
 
 /*
 ================
-CheckPowerups
-
-Check for turning off powerups
-================
-*/
-void() CheckPowerups =
-{
-	if (self.health <= 0)
-		return;
-
-// invisibility
-	if (self.invisible_finished)
-	{
-// sound and screen flash when items starts to run out
-		if (self.invisible_sound < time)
-		{
-			sound (self, CHAN_AUTO, "items/inv3.wav", 0.5, ATTN_IDLE);
-			self.invisible_sound = time + ((random() * 3) + 1);
-		}
-
-
-		if (self.invisible_finished < time + 3)
-		{
-			if (self.invisible_time == 1)
-			{
-				sprint (self, "Ring of Shadows magic is fading\n");
-				stuffcmd (self, "bf\n");
-				sound (self, CHAN_AUTO, "items/inv2.wav", 1, ATTN_NORM);
-				self.invisible_time = time + 1;
-			}
-
-			if (self.invisible_time < time)
-			{
-				self.invisible_time = time + 1;
-				stuffcmd (self, "bf\n");
-			}
-		}
-
-		if (self.invisible_finished < time)
-		{	// just stopped
-			self.items = self.items - IT_INVISIBILITY;
-			self.invisible_finished = 0;
-			self.invisible_time = 0;
-		}
-
-	// use the eyes
-		self.frame = 0;
-		self.modelindex = modelindex_eyes;
-	}
-	else
-		self.modelindex = modelindex_player;	// don't use eyes
-
-// invincibility
-	if (self.invincible_finished)
-	{
-// sound and screen flash when items starts to run out
-		if (self.invincible_finished < time + 3)
-		{
-			if (self.invincible_time == 1)
-			{
-				sprint (self, "Protection is almost burned out\n");
-				stuffcmd (self, "bf\n");
-				sound (self, CHAN_AUTO, "items/protect2.wav", 1, ATTN_NORM);
-				self.invincible_time = time + 1;
-			}
-
-			if (self.invincible_time < time)
-			{
-				self.invincible_time = time + 1;
-				stuffcmd (self, "bf\n");
-			}
-		}
-
-		if (self.invincible_finished < time)
-		{	// just stopped
-			self.items = self.items - IT_INVULNERABILITY;
-			self.invincible_time = 0;
-			self.invincible_finished = 0;
-		}
-		if (self.invincible_finished > time)
-			self.effects = self.effects | EF_DIMLIGHT;
-		else
-			self.effects = self.effects - (self.effects & EF_DIMLIGHT);
-	}
-
-// super damage
-	if (self.super_damage_finished)
-	{
-
-// sound and screen flash when items starts to run out
-
-		if (self.super_damage_finished < time + 3)
-		{
-			if (self.super_time == 1)
-			{
-				sprint (self, "Quad Damage is wearing off\n");
-				stuffcmd (self, "bf\n");
-				sound (self, CHAN_AUTO, "items/damage2.wav", 1, ATTN_NORM);
-				self.super_time = time + 1;
-			}
-
-			if (self.super_time < time)
-			{
-				self.super_time = time + 1;
-				stuffcmd (self, "bf\n");
-			}
-		}
-
-		if (self.super_damage_finished < time)
-		{	// just stopped
-			self.items = self.items - IT_QUAD;
-			self.super_damage_finished = 0;
-			self.super_time = 0;
-		}
-		if (self.super_damage_finished > time)
-			self.effects = self.effects | EF_DIMLIGHT;
-		else
-			self.effects = self.effects - (self.effects & EF_DIMLIGHT);
-	}
-
-// suit
-	if (self.radsuit_finished)
-	{
-		self.air_finished = time + 12;		// don't drown
-
-// sound and screen flash when items starts to run out
-		if (self.radsuit_finished < time + 3)
-		{
-			if (self.rad_time == 1)
-			{
-				sprint (self, "Air supply in Biosuit expiring\n");
-				stuffcmd (self, "bf\n");
-				sound (self, CHAN_AUTO, "items/suit2.wav", 1, ATTN_NORM);
-				self.rad_time = time + 1;
-			}
-
-			if (self.rad_time < time)
-			{
-				self.rad_time = time + 1;
-				stuffcmd (self, "bf\n");
-			}
-		}
-
-		if (self.radsuit_finished < time)
-		{	// just stopped
-			self.items = self.items - IT_SUIT;
-			self.rad_time = 0;
-			self.radsuit_finished = 0;
-		}
-	}
-
-};
-
-
-/*
-================
 PlayerPostThink
 
 Called every frame after physics are run
@@ -1126,24 +883,12 @@ void() PlayerPostThink =
 // check to see if player landed and play landing sound
 	if ((self.jump_flag < -300) && (self.flags & FL_ONGROUND) && (self.health > 0))
 	{
-		if (self.watertype == CONTENT_WATER)
-			sound (self, CHAN_BODY, "player/h2ojump.wav", 1, ATTN_NORM);
-		else if (self.jump_flag < -650)
-		{
-			T_Damage (self, world, world, 5);
-			sound (self, CHAN_VOICE, "player/land2.wav", 1, ATTN_NORM);
-			self.deathtype = "falling";
-		}
-		else
-			sound (self, CHAN_VOICE, "player/land.wav", 1, ATTN_NORM);
-
+		sound (self, CHAN_VOICE, "sounds/player/land.wav", 1, ATTN_NORM);
 		self.jump_flag = 0;
 	}
 
 	if (!(self.flags & FL_ONGROUND))
 		self.jump_flag = self.velocity_z;
-
-	CheckPowerups ();
 };
 
 
@@ -1157,7 +902,7 @@ called when a player connects to a server
 void() ClientConnect =
 {
 	bprint (self.netname);
-	bprint (" entered the game\n");
+	bprint (" connected to the arena\n");
 
 // a client connecting during an intermission can cause problems
 	if (intermission_running)
@@ -1181,10 +926,10 @@ void() ClientDisconnect =
 
 	// let everyone else know
 	bprint (self.netname);
-	bprint (" left the game with ");
+	bprint (" left the arena with ");
 	bprint (ftos(self.frags));
 	bprint (" frags\n");
-	sound (self, CHAN_BODY, "player/tornoff2.wav", 1, ATTN_NONE);
+//	sound (self, CHAN_BODY, "player/tornoff2.wav", 1, ATTN_NONE);
 	set_suicide_frame ();
 };
 
@@ -1309,33 +1054,14 @@ void(entity targ, entity attacker) ClientObituary =
 
 			// in-water deaths
 			rnum = targ.watertype;
-			if (rnum == -3)
-			{
-				if (random() < 0.5)
-					bprint (" sleeps with the fishes\n");
-				else
-					bprint (" sucks it down\n");
-				return;
-			}
-			else if (rnum == -4)
-			{
-				if (random() < 0.5)
-					bprint (" gulped a load of slime\n");
-				else
-					bprint (" can't exist on slime alone\n");
-				return;
-			}
-			else if (rnum == -5)
+			if (rnum == -5)
 			{
 				if (targ.health < -15)
 				{
 					bprint (" burst into flames\n");
 					return;
 				}
-				if (random() < 0.5)
-					bprint (" turned into hot slag\n");
-				else
-					bprint (" visits the Volcano God\n");
+				bprint (" turned into hot slag\n");
 				return;
 			}
 

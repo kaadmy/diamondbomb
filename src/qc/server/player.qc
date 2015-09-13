@@ -331,27 +331,9 @@ local entity	bubble_spawner;
 
 void() DeathSound =
 {
-local float		rs;
+	local float		rs;
 
-	// water death sounds
-	if (self.waterlevel == 3)
-	{
-		DeathBubbles(20);
-		sound (self, CHAN_VOICE, "player/h2odeath.wav", 1, ATTN_NONE);
-		return;
-	}
-	
-	rs = rint ((random() * 4) + 1);
-	if (rs == 1)
-		self.noise = "player/death1.wav";
-	if (rs == 2)
-		self.noise = "player/death2.wav";
-	if (rs == 3)
-		self.noise = "player/death3.wav";
-	if (rs == 4)
-		self.noise = "player/death4.wav";
-	if (rs == 5)
-		self.noise = "player/death5.wav";
+	self.noise = "sounds/player/die.wav";
 
 	sound (self, CHAN_VOICE, self.noise, 1, ATTN_NONE);
 	return;
@@ -438,20 +420,17 @@ void() GibPlayer =
 
 	if (damage_attacker.classname == "teledeath")
 	{
-		sound (self, CHAN_VOICE, "player/teledth1.wav", 1, ATTN_NONE);
+		sound (self, CHAN_VOICE, "sounds/player/telefrag.wav", 1, ATTN_NONE);
 		return;
 	}
 
 	if (damage_attacker.classname == "teledeath2")
 	{
-		sound (self, CHAN_VOICE, "player/teledth1.wav", 1, ATTN_NONE);
+		sound (self, CHAN_VOICE, "sounds/player/telefrag.wav", 1, ATTN_NONE);
 		return;
 	}
 		
-	if (random() < 0.5)
-		sound (self, CHAN_VOICE, "player/gib.wav", 1, ATTN_NONE);
-	else
-		sound (self, CHAN_VOICE, "player/udeath.wav", 1, ATTN_NONE);
+	sound (self, CHAN_VOICE, "sounds/player/die.wav", 1, ATTN_NONE);
 };
 
 void() PlayerDie =

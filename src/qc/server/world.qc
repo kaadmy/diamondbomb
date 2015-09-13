@@ -90,7 +90,6 @@ void() worldspawn =
 
 	precache_model ("models/items/ammo.md3");
 
-
 //
 // Setup light animation tables. 'a' is total darkness, 'z' is maxbright.
 //
@@ -179,7 +178,6 @@ void() InitBodyQue =
 	bodyque_head.owner.owner.owner.owner = bodyque_head;
 };
 
-
 // make a body que entry for the given ent so the ent can be
 // respawned elsewhere
 void(entity ent) CopyToBodyQue =
@@ -196,5 +194,3 @@ void(entity ent) CopyToBodyQue =
 	setsize (bodyque_head, ent.mins, ent.maxs);
 	bodyque_head = bodyque_head.owner;
 };
-
-

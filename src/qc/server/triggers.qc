@@ -112,18 +112,18 @@ void() trigger_multiple =
 {
 	if (self.sounds == 1)
 	{
-		precache_sound ("misc/secret.wav");
-		self.noise = "misc/secret.wav";
+		precache_sound ("sounds/misc/secret.wav");
+		self.noise = "sounds/misc/secret.wav";
 	}
 	else if (self.sounds == 2)
 	{
-		precache_sound ("misc/talk.wav");
-		self.noise = "misc/talk.wav";
+		precache_sound ("sounds/misc/talk.wav");
+		self.noise = "sounds/misc/talk.wav";
 	}
 	else if (self.sounds == 3)
 	{
-		precache_sound ("misc/trigger1.wav");
-		self.noise = "misc/trigger1.wav";
+		precache_sound ("sounds/misc/trigger.wav");
+		self.noise = "sounds/misc/trigger.wav";
 	}
 	
 	if (!self.wait)
@@ -282,21 +282,8 @@ float	SILENT = 2;
 void() play_teleport =
 {
 	local	float v;
-	local	string tmpstr;
 
-	v = random() * 5;
-	if (v < 1)
-		tmpstr = "misc/r_tele1.wav";
-	else if (v < 2)
-		tmpstr = "misc/r_tele2.wav";
-	else if (v < 3)
-		tmpstr = "misc/r_tele3.wav";
-	else if (v < 4)
-		tmpstr = "misc/r_tele4.wav";
-	else
-		tmpstr = "misc/r_tele5.wav";
-
-	sound (self, CHAN_VOICE, tmpstr, 1, ATTN_NORM);
+	sound (self, CHAN_VOICE, "sounds/player/teleport.wav", 1, ATTN_NORM);
 	remove (self);
 };
 
@@ -458,9 +445,9 @@ void() trigger_teleport =
 
 	if (!(self.spawnflags & SILENT))
 	{
-		precache_sound ("ambience/hum1.wav");
+		precache_sound ("sounds/map/hum.wav");
 		o = (self.mins + self.maxs)*0.5;
-		ambientsound (o, "ambience/hum1.wav",0.5 , ATTN_STATIC);
+		ambientsound (o, "sounds/map/hum.wav",0.5 , ATTN_STATIC);
 	}
 };
 
@@ -583,7 +570,7 @@ void() trigger_push_touch =
 			if (other.fly_sound < time)
 			{
 				other.fly_sound = time + 1.5;
-				sound (other, CHAN_AUTO, "ambience/windfly.wav", 1, ATTN_NORM);
+				sound (other, CHAN_AUTO, "sounds/player/jump.wav", 1, ATTN_NORM);
 			}
 		}
 	}
@@ -598,7 +585,6 @@ Pushes the player
 void() trigger_push =
 {
 	InitTrigger ();
-	precache_sound ("ambience/windfly.wav");
 	self.touch = trigger_push_touch;
 	if (!self.speed)
 		self.speed = 1000;
@@ -639,4 +625,3 @@ void() trigger_monsterjump =
 	InitTrigger ();
 	self.touch = trigger_monsterjump_touch;
 };
-

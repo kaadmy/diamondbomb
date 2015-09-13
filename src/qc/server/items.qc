@@ -7,7 +7,7 @@ void() SUB_regen =
 {
 	self.model = self.mdl;		// restore original model
 	self.solid = SOLID_TRIGGER;	// allow it to be touched again
-	sound (self, CHAN_VOICE, "items/itembk2.wav", 1, ATTN_NORM);	// play respawn sound
+	sound (self, CHAN_VOICE, "sounds/items/respawn.wav", 1, ATTN_NORM);	// play respawn sound
 	setorigin (self, self.origin);
 };
 
@@ -108,8 +108,6 @@ void() item_health =
 
 	if (self.spawnflags & H_MEDIUM)
 	{
-		precache_model("models/items/mediumhealth.md3");
-		precache_sound("sounds/items/mediumhealth.wav");
 		setmodel(self, "sounds/items/mediumhealth.md3");
 		self.noise = "sounds/items/mediumhealth.wav";
 		self.healamount = 50;
@@ -118,8 +116,6 @@ void() item_health =
 	else
 	if (self.spawnflags & H_MEGA)
 	{
-		precache_model("models/items/megahealth.md3");
-		precache_sound("sounds/items/megahealth.wav");
 		setmodel(self, "sounds/items/megahealth.md3");
 		self.noise = "sounds/items/megahealth.wav";
 		self.healamount = 100;
@@ -127,8 +123,6 @@ void() item_health =
 	}
 	else
 	{
-		precache_model("models/items/minihealth.md3");
-		precache_sound("sounds/items/minihealth.wav");
 		setmodel(self, "sounds/items/minihealth.md3");
 		self.noise = "sounds/items/minihealth.wav";
 		self.healamount = 25;
@@ -402,7 +396,7 @@ void() weapon_touch =
 	sprint (other, self.netname);
 	sprint (other, "\n");
 // weapon touch sound
-	sound (other, CHAN_ITEM, "weapons/pkup.wav", 1, ATTN_NORM);
+	sound (other, CHAN_ITEM, "sounds/items/weapon.wav", 1, ATTN_NORM);
 	stuffcmd (other, "bf\n");
 
 	bound_other_ammo ();
@@ -545,7 +539,7 @@ local entity	stemp;
 	sprint (other, self.netname);
 	sprint (other, "\n");
 // ammo touch sound
-	sound (other, CHAN_ITEM, "items/ammo.wav", 1, ATTN_NORM);
+	sound (other, CHAN_ITEM, "sounds/items/ammo.wav", 1, ATTN_NORM);
 	stuffcmd (other, "bf\n");
 
 // if changed current ammo, update it
