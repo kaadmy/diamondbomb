@@ -375,7 +375,7 @@ void() W_FireRocket =
 	missile.nextthink = time + 5;
 	missile.think = SUB_Remove;
 
-	setmodel (missile, "progs/missile.mdl");
+	setmodel (missile, "models/weapons/rocket.md3");
 	setsize (missile, '0 0 0', '0 0 0');
 	setorigin (missile, self.origin + v_forward*8 + '0 0 16');
 };
@@ -705,7 +705,7 @@ void() W_SetCurrentAmmo =
 	if (self.weapon == IT_AXE)
 	{
 		self.currentammo = 0;
-		self.weaponmodel = "progs/v_axe.mdl";
+		self.weaponmodel = "models/weapons/axe.md3";
 		self.weaponframe = 0;
 	}
 	else if (self.weapon == IT_SHOTGUN)
@@ -809,7 +809,7 @@ void() W_Attack =
 
 	if (self.weapon == IT_AXE)
 	{
-		sound (self, CHAN_WEAPON, "weapons/ax1.wav", 1, ATTN_NORM);
+		sound (self, CHAN_WEAPON, "sounds/weapons/axe_swing.wav", 1, ATTN_NORM);
 		r = random();
 		if (r < 0.25)
 			player_axe1 ();
