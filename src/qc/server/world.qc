@@ -47,7 +47,7 @@ void() worldspawn =
 	W_Precache ();			// get weapon precaches
 
 // sounds used from C physics code
-	precache_sound ("player/land.wav");		// landing thud
+	precache_sound ("sounds/player/land.wav");		// landing thud
 
 // setup precaches allways needed
 	precache_sound ("sounds/items/respawn.wav");		// item respawn sound

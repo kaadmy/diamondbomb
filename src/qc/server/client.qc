@@ -902,7 +902,7 @@ called when a player connects to a server
 void() ClientConnect =
 {
 	bprint (self.netname);
-	bprint (" connected to the arena\n");
+	bprint (" has connected to the arena\n");
 
 // a client connecting during an intermission can cause problems
 	if (intermission_running)
@@ -926,7 +926,7 @@ void() ClientDisconnect =
 
 	// let everyone else know
 	bprint (self.netname);
-	bprint (" left the arena with ");
+	bprint (" disconnected from the arena with ");
 	bprint (ftos(self.frags));
 	bprint (" frags\n");
 //	sound (self, CHAN_BODY, "player/tornoff2.wav", 1, ATTN_NONE);

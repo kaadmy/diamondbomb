@@ -63,7 +63,7 @@ void() W_FireAxe =
 	}
 	else
 	{	// hit wall
-		sound (self, CHAN_WEAPON, "sounds/player/axe_scrape.wav", 1, ATTN_NORM);
+		sound (self, CHAN_WEAPON, "sounds/weapons/axe_scrape.wav", 1, ATTN_NORM);
 		WriteByte (MSG_BROADCAST, SVC_TEMPENTITY);
 		WriteByte (MSG_BROADCAST, TE_GUNSHOT);
 		WriteCoord (MSG_BROADCAST, org_x);
@@ -815,13 +815,13 @@ void() W_Attack =
 		sound (self, CHAN_WEAPON, "sounds/weapons/axe_swing.wav", 1, ATTN_NORM);
 		r = random();
 		player_axe1 ();
-		self.attack_finished = time + 0.3;
+		self.attack_finished = time + 0.5;
 	}
 	else if (self.weapon == IT_SHOTGUN)
 	{
 		player_shot1 ();
 		W_FireShotgun ();
-		self.attack_finished = time + 0.7;
+		self.attack_finished = time + 0.6;
 	}
 	else if (self.weapon == IT_PLASMAGUN)
 	{
