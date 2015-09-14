@@ -30,6 +30,19 @@ void() W_Precache =
 
 	precache_sound ("sounds/weapons/axe_swing.wav");	// axe swing
 	precache_sound ("sounds/weapons/axe_scrape.wav");	// axe hit wall
+
+// weapon models
+	precache_model ("models/weapons/axe.md3");
+	precache_model ("models/weapons/shotgun.md3");
+	precache_model ("models/weapons/plasmagun.md3");
+	precache_model ("models/weapons/railgun.md3");
+	precache_model ("models/weapons/rocketlauncher.md3");
+	precache_model ("models/weapons/grenadelauncher.md3");
+
+// projectile models
+	precache_model ("models/weapons/grenade.md3");
+	precache_model ("models/weapons/rocket.md3");
+	precache_model ("models/weapons/plasma.md3");
 };
 
 float() crandom =
@@ -321,10 +334,8 @@ void() T_MissileTouch =
 		return;
 	}
 
-	damg = 80;
-
 	if (other.health)
-		T_Damage (other, self, self.owner, damg );
+		T_Damage (other, self, self.owner, 80 );
 
 	// don't do radius damage to the other, because all the damage
 	// was done in the impact
@@ -342,13 +353,22 @@ void() T_MissileTouch =
 	BecomeExplosion ();
 };
 
-
+void() W_MissileThink =
+{
+	if (time > self.lifetime)
+	{
+		T_MissileTouch();
+	}
+};
 
 /*
 ================
 W_FireRocket
 ================
 */
+
+.float lifetime;
+
 void() W_FireRocket =
 {
 	local	entity missile, mpuff;
@@ -375,8 +395,9 @@ void() W_FireRocket =
 	missile.touch = T_MissileTouch;
 
 // set missile duration
-	missile.nextthink = time + 5;
-	missile.think = SUB_Remove;
+       	missile.lifetime = lifetime;
+	missile.nextthink = time;
+	missile.think = W_MissileThink;
 
 	setmodel (missile, "models/weapons/rocket.md3");
 	setsize (missile, '0 0 0', '0 0 0');
@@ -549,7 +570,7 @@ void() W_FireGrenade =
 	missile.touch = GrenadeTouch;
 
 // set missile duration
-	missile.nextthink = time + 2.5;
+	missile.nextthink = time + 2;
 	missile.think = GrenadeExplode;
 
 	setmodel (missile, "models/weapons/grenade.md3");
@@ -563,13 +584,6 @@ void() W_FireGrenade =
 void() plasma_touch;
 
 
-/*
-===============
-launch_spike
-
-Used for both the player and the ogre
-===============
-*/
 void(vector org, vector dir) launch_plasma =
 {
 	newmis = spawn ();
@@ -718,8 +732,8 @@ float() W_BestWeapon =
 
 	it = self.items;
 
-	if (self.waterlevel <= 1 && self.ammo_slugs >= 1 && (it & IT_RAILGUN) )
-			return IT_RAILGUN;
+	if (self.ammo_slugs >= 1 && (it & IT_RAILGUN) )
+		return IT_RAILGUN;
 	if(self.ammo_plasma >= 1 && (it & IT_PLASMAGUN) )
 		return IT_PLASMAGUN;
 	if(self.ammo_shells >= 1 && (it & IT_SHOTGUN) )
@@ -758,8 +772,6 @@ void()	player_slug1;
 
 void() W_Attack =
 {
-	local	float	r;
-
 	if (!W_CheckNoAmmo ())
 		return;
 
@@ -780,8 +792,8 @@ void() W_Attack =
 	else if (self.weapon == IT_PLASMAGUN)
 	{
 		player_plasma1 ();
-		W_FirePlasma(4);
-		self.attack_finished = time + 0.16;
+		W_FirePlasma();
+		self.attack_finished = time + 0.08;
 	}
 	else if (self.weapon == IT_GRENADE_LAUNCHER)
 	{
@@ -798,8 +810,8 @@ void() W_Attack =
 	else if (self.weapon == IT_RAILGUN)
 	{
 		player_slug1();
-		self.attack_finished = time + 2.0;
 		W_FireSlug();
+		self.attack_finished = time + 2.0;
 	}
 };
 
@@ -812,6 +824,7 @@ W_ChangeWeapon
 void() W_ChangeWeapon =
 {
 	local	float	it, am, fl;
+	local	string	w_name;
 
 	it = self.items;
 	am = 0;
@@ -846,22 +859,44 @@ void() W_ChangeWeapon =
 	}
 	else if (self.impulse == 6)
 	{
-		fl = IT_SLUGS;
+		fl = IT_RAILGUN;
 		if (self.ammo_slugs < 1)
 			am = 1;
 	}
 
 	self.impulse = 0;
 
+	if (fl == IT_AXE)
+	   w_name = "Axe";
+	else if (fl == IT_SHOTGUN)
+	   w_name = "Shotgun";
+	else if (fl == IT_PLASMAGUN)
+	   w_name = "Plasmagun";
+	else if (fl == IT_GRENADE_LAUNCHER)
+	   w_name = "Grenade Launcher";
+	else if (fl == IT_ROCKET_LAUNCHER)
+	   w_name = "Rocket Launcher";
+	else if (fl == IT_RAILGUN)
+	   w_name = "Railgun";
+	else
+	   w_name = "?";
+
 	if (!(self.items & fl))
-	{	// don't have the weapon or the ammo
-		sprint (self, "You do not have that weapon.\n");
+	{	// don't have the weapon or the ammo		
+
+		sprint (self, "You do not have the ^2");
+		sprint (self, w_name);
+		sprint (self, "^7.\n");
+
 		return;
 	}
 
 	if (am)
 	{	// don't have the ammo
-		sprint (self, "You do not have enough ammo.\n");
+		sprint (self, "You do not have enough ammo for the ^2");
+		sprint (self, w_name);
+		sprint (self, "^2.\n");
+
 		return;
 	}
 
@@ -879,17 +914,18 @@ CheatCommand
 */
 void() CheatCommand =
 {
-	self.ammo_rockets = 100;
-	self.ammo_plasma = 200;
-	self.ammo_shells = 100;
-	self.ammo_slugs = 200;
+	self.ammo_rockets = 40;
+	self.ammo_plasma = 120;
+	self.ammo_shells = 80;
+	self.ammo_slugs = 40;
 
 	self.items = self.items |
 		IT_AXE |
 		IT_SHOTGUN |
 		IT_PLASMAGUN |
 		IT_GRENADE_LAUNCHER |
-		IT_ROCKET_LAUNCHER;
+		IT_ROCKET_LAUNCHER |
+		IT_RAILGUN;
 
 	self.items = self.items | IT_SLUGS;
 

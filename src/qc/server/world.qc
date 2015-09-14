@@ -81,13 +81,6 @@ void() worldspawn =
 // player model
 	precache_model ("models/players/player.md3");
 
-// weapon models
-	precache_model ("models/weapons/shotgun.md3");
-	precache_model ("models/weapons/plasmagun.md3");
-	precache_model ("models/weapons/railgun.md3");
-	precache_model ("models/weapons/rocketlauncher.md3");
-	precache_model ("models/weapons/grenadelauncher.md3");
-
 	precache_model ("models/items/ammo.md3");
 
 //

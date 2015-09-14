@@ -333,12 +333,17 @@ float	SVC_SELLSCREEN		= 33;
 
 
 float	TE_PLASMA		= 0;
-float	TE_GUNSHOT		= 1;
-float	TE_SLUG		= 2;
+float	TE_SUPERSPIKE	= 1;
+float	TE_GUNSHOT		= 2;
 float	TE_EXPLOSION	= 3;
-float	TE_LIGHTNING1	= 4;
-float	TE_LAVASPLASH	= 5;
-float	TE_TELEPORT		= 6;
+float	TE_TAREXPLOSION	= 4;
+float	TE_SLUG	= 5;
+float	TE_LIGHTNING2	= 6;
+float	TE_WIZSPIKE		= 7;
+float	TE_KNIGHTSPIKE	= 8;
+float	TE_LIGHTNING3	= 9;
+float	TE_LAVASPLASH	= 10;
+float	TE_TELEPORT		= 11;
 
 // sound channels
 // channel 0 never willingly overrides

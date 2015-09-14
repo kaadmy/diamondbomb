@@ -112,8 +112,6 @@ void() player_plasma1   =[$shot1, player_plasma1  ]
 	self.weaponframe = self.weaponframe + 1;
 	if (self.weaponframe == 9)
 		self.weaponframe = 1;
-	W_FirePlasma ();
-	self.attack_finished = time + 0.2;
 };
 
 //============================================================================
@@ -127,8 +125,6 @@ void() player_slug   =[$shot1, player_slug  ]
 	self.weaponframe = self.weaponframe + 1;
 	if (self.weaponframe == 5)
 		self.weaponframe = 1;
-	W_FireSlug();
-	self.attack_finished = time + 0.2;
 };
 
 //============================================================================

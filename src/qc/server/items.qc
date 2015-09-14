@@ -318,14 +318,14 @@ WEAPONS
 
 void() bound_other_ammo =
 {
-	if (other.ammo_shells > 100)
-		other.ammo_shells = 100;
-	if (other.ammo_plasma > 200)
-		other.ammo_plasma = 200;
-	if (other.ammo_rockets > 100)
-		other.ammo_rockets = 100;
-	if (other.ammo_slugs > 100)
-		other.ammo_slugs = 100;
+	if (other.ammo_shells > 80)
+		other.ammo_shells = 80;
+	if (other.ammo_plasma > 120)
+		other.ammo_plasma = 120;
+	if (other.ammo_rockets > 40)
+		other.ammo_rockets = 40;
+	if (other.ammo_slugs > 40)
+		other.ammo_slugs = 40;
 };
 
 /*
@@ -384,9 +384,9 @@ void() weapon_touch =
 	else
 		objerror ("weapon_touch: unknown classname");
 
-	sprint (other, "You got the ");
+	sprint (other, "You got the ^2");
 	sprint (other, self.netname);
-	sprint (other, "\n");
+	sprint (other, "^7.\n");
 // weapon touch sound
 	sound (other, CHAN_ITEM, "sounds/items/weapon.wav", 1, ATTN_NORM);
 	stuffcmd (other, "bf\n");
@@ -443,6 +443,7 @@ void() weapon_grenadelauncher =
 {
 	precache_model ("models/weapons/grenadelauncher.md3");
 	setmodel (self, "models/weapons/grenadelauncher.md3");
+	self.model = "models/weapons/grenadelauncher.md3";
 	self.weapon = 3;
 	self.netname = "Grenade Launcher";
 	self.touch = weapon_touch;
@@ -524,7 +525,7 @@ void() ammo_touch =
 // railgun
 	if (self.weapon == 4)
 	{
-		if (other.ammo_slugs >= 20)
+		if (other.ammo_slugs >= 40)
 			return;
 		other.ammo_slugs = other.ammo_slugs + self.aflag;
 	}
@@ -555,8 +556,6 @@ void() ammo_touch =
 
 
 
-
-float WEAPON_BIG2 = 1;
 
 /*QUAKED item_shells (0 .5 .8) (0 0 0) (32 32 32) big
 */
