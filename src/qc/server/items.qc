@@ -357,14 +357,6 @@ void() weapon_touch =
 		new = IT_PLASMAGUN;
 		other.ammo_plasma = other.ammo_plasma + 30;
 	}
-	else if (self.classname == "weapon_shotgun")
-	{
-		if (leave && (other.items & IT_SHOTGUN) )
-			return;
-		hadammo = other.ammo_shells;
-		new = IT_SHOTGUN;
-		other.ammo_rockets = other.ammo_rockets + 5;
-	}
 	else if (self.classname == "weapon_rocketlauncher")
 	{
 		if (leave && (other.items & IT_ROCKET_LAUNCHER) )
@@ -420,8 +412,9 @@ void() weapon_touch =
 // remove it in single player, or setup for respawning in deathmatch
 	self.model = string_null;
 	self.solid = SOLID_NOT;
-	if (deathmatch == 1)
-		self.nextthink = time + 30;
+
+	self.nextthink = time + 10;
+
 	self.think = SUB_regen;
 
 	activator = other;
@@ -429,13 +422,13 @@ void() weapon_touch =
 };
 
 
-/*QUAKED weapon_nailgun (0 .5 .8) (-16 -16 0) (16 16 32)
+/*QUAKED weapon_plasmagun (0 .5 .8) (-16 -16 0) (16 16 32)
 */
 
 void() weapon_plasmagun =
 {
-	precache_model ("models/weapons/plasma.md3");
-	setmodel (self, "models/weapons/plasma.md3");
+	precache_model ("models/weapons/plasmagun.md3");
+	setmodel (self, "models/weapons/plasmagun.md3");
 	self.weapon = IT_PLASMAGUN;
 	self.netname = "Plasmagun";
 	self.touch = weapon_touch;
@@ -448,8 +441,8 @@ void() weapon_plasmagun =
 
 void() weapon_grenadelauncher =
 {
-	precache_model ("models/weapons/grenade.md3");
-	setmodel (self, "models/weapons/grenade.md3");
+	precache_model ("models/weapons/grenadelauncher.md3");
+	setmodel (self, "models/weapons/grenadelauncher.md3");
 	self.weapon = 3;
 	self.netname = "Grenade Launcher";
 	self.touch = weapon_touch;
@@ -462,8 +455,8 @@ void() weapon_grenadelauncher =
 
 void() weapon_rocketlauncher =
 {
-	precache_model ("progs/g_rock2.mdl");
-	setmodel (self, "progs/g_rock2.mdl");
+	precache_model ("models/weapons/rocketlauncher.md3");
+	setmodel (self, "models/weapons/rocketlauncher.md3");
 	self.weapon = 3;
 	self.netname = "Rocket Launcher";
 	self.touch = weapon_touch;
@@ -472,11 +465,13 @@ void() weapon_rocketlauncher =
 };
 
 
-/*QUAKED weapon_lightning (0 .5 .8) (-16 -16 0) (16 16 32)
+/*QUAKED weapon_railgun (0 .5 .8) (-16 -16 0) (16 16 32)
 */
 
 void() weapon_railgun =
 {
+	precache_model ("models/weapons/railgun.md3");
+	setmodel (self, "models/weapons/railgun.md3");
 	self.weapon = 3;
 	self.netname = "Railgun";
 	self.touch = weapon_touch;
@@ -495,7 +490,7 @@ AMMO
 
 void() ammo_touch =
 {
-local entity	stemp;
+	local entity	stemp;
 
 	if (other.classname != "player")
 		return;
@@ -505,7 +500,7 @@ local entity	stemp;
 // shotgun
 	if (self.weapon == 1)
 	{
-		if (other.ammo_shells >= 100)
+		if (other.ammo_shells >= 80)
 			return;
 		other.ammo_shells = other.ammo_shells + self.aflag;
 	}
@@ -513,7 +508,7 @@ local entity	stemp;
 // plasmagun
 	if (self.weapon == 1)
 	{
-		if (other.ammo_plasma >= 100)
+		if (other.ammo_plasma >= 120)
 			return;
 		other.ammo_plasma = other.ammo_plasma + self.aflag;
 	}
@@ -521,7 +516,7 @@ local entity	stemp;
 // rockets
 	if (self.weapon == 3)
 	{
-		if (other.ammo_rockets >= 100)
+		if (other.ammo_rockets >= 40)
 			return;
 		other.ammo_rockets = other.ammo_rockets + self.aflag;
 	}
@@ -529,7 +524,7 @@ local entity	stemp;
 // railgun
 	if (self.weapon == 4)
 	{
-		if (other.ammo_slugs >= 100)
+		if (other.ammo_slugs >= 20)
 			return;
 		other.ammo_slugs = other.ammo_slugs + self.aflag;
 	}
@@ -551,7 +546,7 @@ local entity	stemp;
 // setup for respawning
 	self.model = string_null;
 	self.solid = SOLID_NOT;
-	self.nextthink = time + 3;
+	self.nextthink = time + 20;
 	self.think = SUB_regen;
 
 	activator = other;
@@ -605,7 +600,7 @@ void() item_rockets =
 	setmodel (self, "models/items/ammo.md3");
 	self.aflag = 10;
 
-	self.weapon = 1;
+	self.weapon = 3;
 	self.netname = "Rockets";
 	setsize (self, '0 0 0', '32 32 56');
 	StartItem ();
@@ -621,7 +616,7 @@ void() item_slugs =
 	setmodel (self, "models/items/ammo.md3");
 	self.aflag = 10;
 
-	self.weapon = 1;
+	self.weapon = 4;
 	self.netname = "Slugs";
 	setsize (self, '0 0 0', '32 32 56');
 	StartItem ();

@@ -12,6 +12,15 @@ float sv_edgefriction, cl_rollangle, cl_divspeed;
 // note also, this code uses some builtin functions from dpextensions.qc
 // (included with darkplaces engine releases)
 
+void() StepSound =
+{
+	if (self.health < 0)
+		return;
+
+	sound (self, CHAN_VOICE, "sounds/player/land.wav", 1, ATTN_NORM);
+};
+
+
 void() SV_PlayerPhysics =
 {
 	local vector wishvel, wishdir, v;
@@ -168,6 +177,14 @@ void() SV_PlayerPhysics =
 				self.velocity = '0 0 0';
 			else
 				self.velocity = self.velocity * f;
+
+		}
+
+		// footstep sounds
+		if ( (self.laststep < time) || (!self.laststep) )
+		{
+			self.laststep = time + 0.5;
+			StepSound ();
 		}
 
 		// acceleration

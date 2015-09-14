@@ -3,7 +3,7 @@
 void () W_WeaponFrame;
 void() W_SetCurrentAmmo;
 void() player_pain;
-void() player_stand1;
+void() player_stand;
 void (vector org) spawn_tfog;
 void (vector org, entity death_owner) spawn_tdeath;
 
@@ -511,7 +511,7 @@ void() PutClientInServer =
 
 	self.view_ofs = '0 0 22';
 
-	player_stand1 ();
+	player_stand ();
 
 	if (deathmatch || coop)
 	{
@@ -751,12 +751,9 @@ void() WaterMove =
 	{	// do damage
 		if (self.dmgtime < time)
 		{
-			if (self.radsuit_finished > time)
-				self.dmgtime = time + 1;
-			else
-				self.dmgtime = time + 0.2;
+			self.dmgtime = time + 0.2;
 
-			T_Damage (self, world, world, 10*self.waterlevel);
+			T_Damage (self, world, world, 5*self.waterlevel);
 		}
 	}
 	if ( !(self.flags & FL_INWATER) )

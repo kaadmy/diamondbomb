@@ -33,11 +33,8 @@ float		teamplay;
 float		serverflags;		// propagated from level to level, used to
 								// keep track of completed episodes
 
-float		total_secrets;
-float		total_monsters;
-
+float		total_secrets;		// how many secrets there are
 float		found_secrets;		// number of secrets found
-float		killed_monsters;	// number of monsters killed
 
 
 // spawnparms are used to encode information about clients across server
@@ -335,18 +332,13 @@ float	SVC_CDTRACK			= 32;
 float	SVC_SELLSCREEN		= 33;
 
 
-float	TE_SPIKE		= 0;
-float	TE_SUPERSPIKE	= 1;
-float	TE_GUNSHOT		= 2;
+float	TE_PLASMA		= 0;
+float	TE_GUNSHOT		= 1;
+float	TE_SLUG		= 2;
 float	TE_EXPLOSION	= 3;
-float	TE_TAREXPLOSION	= 4;
-float	TE_LIGHTNING1	= 5;
-float	TE_LIGHTNING2	= 6;
-float	TE_WIZSPIKE		= 7;
-float	TE_KNIGHTSPIKE	= 8;
-float	TE_LIGHTNING3	= 9;
-float	TE_LAVASPLASH	= 10;
-float	TE_TELEPORT		= 11;
+float	TE_LIGHTNING1	= 4;
+float	TE_LAVASPLASH	= 5;
+float	TE_TELEPORT		= 6;
 
 // sound channels
 // channel 0 never willingly overrides

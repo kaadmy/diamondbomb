@@ -109,7 +109,7 @@ void() lightning_fire =
 	self.think = lightning_fire;
 
 	WriteByte (MSG_ALL, SVC_TEMPENTITY);
-	WriteByte (MSG_ALL, TE_LIGHTNING3);
+	WriteByte (MSG_ALL, TE_SLUG);
 	WriteEntity (MSG_ALL, world);
 	WriteCoord (MSG_ALL, p1_x);
 	WriteCoord (MSG_ALL, p1_y);
@@ -158,4 +158,3 @@ void() event_lightning =
 {
 	self.use = lightning_use;
 };
-

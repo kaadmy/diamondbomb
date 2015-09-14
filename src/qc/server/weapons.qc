@@ -465,7 +465,7 @@ void() W_FireSlug =
 	traceline (org, org + v_forward*600, TRUE, self);
 
 	WriteByte (MSG_BROADCAST, SVC_TEMPENTITY);
-	WriteByte (MSG_BROADCAST, TE_LIGHTNING2);
+	WriteByte (MSG_BROADCAST, TE_SLUG);
 	WriteEntity (MSG_BROADCAST, self);
 	WriteCoord (MSG_BROADCAST, org_x);
 	WriteCoord (MSG_BROADCAST, org_y);
@@ -560,7 +560,7 @@ void() W_FireGrenade =
 
 //=============================================================================
 
-void() spike_touch;
+void() plasma_touch;
 
 
 /*
@@ -579,7 +579,7 @@ void(vector org, vector dir) launch_plasma =
 
 	newmis.angles = vectoangles(dir);
 
-	newmis.touch = spike_touch;
+	newmis.touch = plasma_touch;
 	newmis.classname = "plasma";
 	newmis.think = SUB_Remove;
 	newmis.nextthink = time + 6;
@@ -590,7 +590,7 @@ void(vector org, vector dir) launch_plasma =
 	newmis.velocity = dir * 1000;
 };
 
-void(float ox) W_FirePlasma =
+void() W_FirePlasma =
 {
 	local vector	dir;
 	local entity	old;
@@ -608,7 +608,7 @@ void(float ox) W_FirePlasma =
 	self.attack_finished = time + 0.2;
 	self.currentammo = self.ammo_plasma = self.ammo_plasma - 1;
 	dir = aim (self, 1000);
-	launch_plasma (self.origin + '0 0 16' + v_right*ox, dir);
+	launch_plasma (self.origin + '0 0 16' + v_right, dir);
 
 	self.punchangle_x = -2;
 };
@@ -616,9 +616,8 @@ void(float ox) W_FirePlasma =
 
 
 .float hit_z;
-void() spike_touch =
+void() plasma_touch =
 {
-local float rand;
 	if (other == self.owner)
 		return;
 
@@ -640,13 +639,7 @@ local float rand;
 	else
 	{
 		WriteByte (MSG_BROADCAST, SVC_TEMPENTITY);
-
-		if (self.classname == "wizspike")
-			WriteByte (MSG_BROADCAST, TE_WIZSPIKE);
-		else if (self.classname == "knightspike")
-			WriteByte (MSG_BROADCAST, TE_KNIGHTSPIKE);
-		else
-			WriteByte (MSG_BROADCAST, TE_SPIKE);
+		WriteByte (MSG_BROADCAST, TE_PLASMA);
 		WriteCoord (MSG_BROADCAST, self.origin_x);
 		WriteCoord (MSG_BROADCAST, self.origin_y);
 		WriteCoord (MSG_BROADCAST, self.origin_z);
@@ -655,41 +648,6 @@ local float rand;
 	remove(self);
 
 };
-
-void() superspike_touch =
-{
-local float rand;
-	if (other == self.owner)
-		return;
-
-	if (other.solid == SOLID_TRIGGER)
-		return;	// trigger field, do nothing
-
-	if (pointcontents(self.origin) == CONTENT_SKY)
-	{
-		remove(self);
-		return;
-	}
-
-// hit something that bleeds
-	if (other.takedamage)
-	{
-		spawn_touchblood (18);
-		T_Damage (other, self, self.owner, 18);
-	}
-	else
-	{
-		WriteByte (MSG_BROADCAST, SVC_TEMPENTITY);
-		WriteByte (MSG_BROADCAST, TE_SUPERSPIKE);
-		WriteCoord (MSG_BROADCAST, self.origin_x);
-		WriteCoord (MSG_BROADCAST, self.origin_y);
-		WriteCoord (MSG_BROADCAST, self.origin_z);
-	}
-
-	remove(self);
-
-};
-
 
 /*
 ===============================================================================
@@ -739,7 +697,7 @@ void() W_SetCurrentAmmo =
 		self.weaponframe = 0;
 		self.items = self.items | IT_ROCKETS;
 	}
-	else if (self.weapon == IT_SLUGS)
+	else if (self.weapon == IT_RAILGUN)
 	{
 		self.currentammo = self.ammo_slugs;
 		self.weaponmodel = "models/weapons/railgun.md3";
@@ -760,8 +718,8 @@ float() W_BestWeapon =
 
 	it = self.items;
 
-	if (self.waterlevel <= 1 && self.ammo_slugs >= 1 && (it & IT_SLUGS) )
-			return IT_SLUGS;
+	if (self.waterlevel <= 1 && self.ammo_slugs >= 1 && (it & IT_RAILGUN) )
+			return IT_RAILGUN;
 	if(self.ammo_plasma >= 1 && (it & IT_PLASMAGUN) )
 		return IT_PLASMAGUN;
 	if(self.ammo_shells >= 1 && (it & IT_SHOTGUN) )
@@ -793,9 +751,6 @@ An attack impulse can be triggered now
 ============
 */
 void()	player_axe1;
-void()	player_axeb1;
-void()	player_axec1;
-void()	player_axed1;
 void()	player_shot1;
 void()	player_plasma1;
 void()	player_rocket1;
@@ -813,7 +768,6 @@ void() W_Attack =
 	if (self.weapon == IT_AXE)
 	{
 		sound (self, CHAN_WEAPON, "sounds/weapons/axe_swing.wav", 1, ATTN_NORM);
-		r = random();
 		player_axe1 ();
 		self.attack_finished = time + 0.5;
 	}
@@ -901,13 +855,13 @@ void() W_ChangeWeapon =
 
 	if (!(self.items & fl))
 	{	// don't have the weapon or the ammo
-		sprint (self, "no weapon.\n");
+		sprint (self, "You do not have that weapon.\n");
 		return;
 	}
 
 	if (am)
 	{	// don't have the ammo
-		sprint (self, "not enough ammo.\n");
+		sprint (self, "You do not have enough ammo.\n");
 		return;
 	}
 
@@ -925,9 +879,6 @@ CheatCommand
 */
 void() CheatCommand =
 {
-	if (deathmatch || coop)
-		return;
-
 	self.ammo_rockets = 100;
 	self.ammo_plasma = 200;
 	self.ammo_shells = 100;
@@ -978,7 +929,13 @@ void() CycleWeaponCommand =
 		else if (self.weapon == IT_SHOTGUN)
 		{
 			self.weapon = IT_PLASMAGUN;
-			if (self.ammo_plasma < 2)
+			if (self.ammo_plasma < 1)
+				am = 1;
+		}
+		else if (self.weapon == IT_PLASMAGUN)
+		{
+			self.weapon = IT_GRENADE_LAUNCHER;
+			if (self.ammo_rockets < 1)
 				am = 1;
 		}
 		else if (self.weapon == IT_GRENADE_LAUNCHER)
@@ -1027,6 +984,12 @@ void() CycleWeaponReverseCommand =
 			if (self.ammo_slugs < 1)
 				am = 1;
 		}
+		else if (self.weapon == IT_RAILGUN)
+		{
+			self.weapon = IT_ROCKET_LAUNCHER;
+			if (self.ammo_rockets < 1)
+				am = 1;
+		}
 		else if (self.weapon == IT_ROCKET_LAUNCHER)
 		{
 			self.weapon = IT_GRENADE_LAUNCHER;
@@ -1036,7 +999,7 @@ void() CycleWeaponReverseCommand =
 		else if (self.weapon == IT_GRENADE_LAUNCHER)
 		{
 			self.weapon = IT_PLASMAGUN;
-			if (self.ammo_plasma < 2)
+			if (self.ammo_plasma < 1)
 				am = 1;
 		}
 		else if (self.weapon == IT_PLASMAGUN)
