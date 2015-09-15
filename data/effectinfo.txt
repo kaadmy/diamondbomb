@@ -1,0 +1,76 @@
+// effects
+
+//
+// smoke
+//
+
+// smoke
+effect TE_WIZSPIKE
+notunderwater
+count 8
+type smoke
+color 0x101010 0x202020
+alpha 127 255
+tex 0 8
+size 32 32
+originjitter 4 4 4
+velocityoffset 0 0 8
+velocityjitter 16 16 16
+
+//
+// explosion
+//
+
+// decal/light
+effect TE_EXPLOSION
+countabsolute 1
+type decal
+alpha 255 255
+tex 0 8
+size 32 32
+originjitter 40 40 40
+lightradius 150
+lightradiusfade 300
+lightcolor 4 0.5 0.5
+
+// sparks
+effect TE_EXPLOSION
+notunderwater
+count 32
+type spark
+size 2 2
+color 0xF00000 0x800000
+alpha 255 255 400
+airfriction 0.4
+bounce 2
+gravity 1
+velocityoffset 0 0 120
+velocityjitter 255 255 255
+
+//
+// plasma
+//
+
+// decal/light
+effect TE_PLASMA
+countabsolute 1
+type decal
+alpha 255 255 0
+originjitter 40 40 40
+lightradius 100
+lightradiusfade 150
+lightcolor 0 3 3
+
+// sparks
+effect TE_PLASMA
+notunderwater
+count 16
+type spark
+size 1 1
+color 0x00F0F0 0x008080
+alpha 255 255 400
+airfriction 0.4
+bounce 4
+gravity 0.8
+velocityoffset 0 0 160
+velocityjitter 255 255 255

@@ -3,6 +3,7 @@
 defs.qc
 subs.qc
 combat.qc
+effect.qc
 items.qc
 weapons.qc
 world.qc

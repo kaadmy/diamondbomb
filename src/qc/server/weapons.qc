@@ -1,11 +1,9 @@
-/*
-*/
+
+void(float, vector) effect;
 void (entity targ, entity inflictor, entity attacker, float damage) T_Damage;
 void () player_run;
 void(entity bomb, entity attacker, float rad, entity ignore) T_RadiusDamage;
 void(vector org, vector vel, float damage) SpawnBlood;
-void() SuperDamageSound;
-
 
 // called by worldspawn
 void() W_Precache =
@@ -334,8 +332,10 @@ void() T_MissileTouch =
 		return;
 	}
 
+	damg = 80;
+
 	if (other.health)
-		T_Damage (other, self, self.owner, 80 );
+		T_Damage (other, self, self.owner, damg );
 
 	// don't do radius damage to the other, because all the damage
 	// was done in the impact
@@ -353,12 +353,16 @@ void() T_MissileTouch =
 	BecomeExplosion ();
 };
 
+.float lifetime;
+
 void() W_MissileThink =
 {
-	if (time > self.lifetime)
+	if (self.lifetime < time)
 	{
-		T_MissileTouch();
+		T_MissileTouch ();
 	}
+	effect (TE_WIZSPIKE, self.origin);
+	self.nextthink = time;
 };
 
 /*
@@ -366,9 +370,6 @@ void() W_MissileThink =
 W_FireRocket
 ================
 */
-
-.float lifetime;
-
 void() W_FireRocket =
 {
 	local	entity missile, mpuff;
@@ -395,7 +396,7 @@ void() W_FireRocket =
 	missile.touch = T_MissileTouch;
 
 // set missile duration
-       	missile.lifetime = lifetime;
+       	missile.lifetime = time + 10; // blow up 10 seconds after being fired
 	missile.nextthink = time;
 	missile.think = W_MissileThink;
 
@@ -460,11 +461,9 @@ void(vector p1, vector p2, entity from, float damage) SlugDamage =
 	}
 };
 
-
 void() W_FireSlug =
 {
 	local	vector		org;
-	local	float		cells;
 
 	if (self.ammo_slugs < 1)
 	{
@@ -473,17 +472,13 @@ void() W_FireSlug =
 		return;
 	}
 
-	if (self.t_width < time)
-	{
-		self.t_width = time + 0.6;
-	}
 	self.punchangle_x = -2;
 
 	self.currentammo = self.ammo_slugs = self.ammo_slugs - 1;
 
 	org = self.origin + '0 0 16';
 
-	traceline (org, org + v_forward*600, TRUE, self);
+	traceline (org, org + v_forward*10000, TRUE, self);
 
 	WriteByte (MSG_BROADCAST, SVC_TEMPENTITY);
 	WriteByte (MSG_BROADCAST, TE_SLUG);
@@ -500,7 +495,6 @@ void() W_FireSlug =
 
 
 //=============================================================================
-
 
 void() GrenadeExplode =
 {

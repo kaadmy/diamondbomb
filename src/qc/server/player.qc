@@ -116,7 +116,7 @@ void() player_plasma1   =[$shot1, player_plasma1  ]
 
 //============================================================================
 
-void() player_slug   =[$shot1, player_slug  ] 
+void() player_slug1   =[$shot1, player_slug1  ] 
 {
 	self.effects = self.effects | EF_MUZZLEFLASH;
 

@@ -331,7 +331,6 @@ float	SVC_FINALE			= 31;
 float	SVC_CDTRACK			= 32;
 float	SVC_SELLSCREEN		= 33;
 
-
 float	TE_PLASMA		= 0;
 float	TE_SUPERSPIKE	= 1;
 float	TE_GUNSHOT		= 2;
